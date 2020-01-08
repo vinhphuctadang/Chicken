@@ -11,8 +11,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 const port = process.env.PORT || 8080;
 
-username = "a";
-password = "a";
+var database = { // load from the database later
+
+}
 
 app.get ('/', (req, res)=>{
 		res.send ('HELLO WORLD');
@@ -25,12 +26,7 @@ app.get ('/signup', (req, res)=>{
 	})
 app.post ('/login', (req, res)=>{
 		try {
-			pk = req.body.pk;
-			crypted  = req.body.crypted;
-			infos = req.body.infos;
-
 			
-
 		} catch (e) {
 			res.send ('Login failed, due to ' + e);
 		}
@@ -46,14 +42,10 @@ app.post ('/signup', (req, res)=>{
 
 function authentication (usr, psw){
 
-	if (usr == username && password == psw)
-		return true;
-	return false;
 }
 
 function register (usr, psw) {
-	username = usr;
-	password = psw;
+		
 }
 
 app.listen (port, ()=>{
