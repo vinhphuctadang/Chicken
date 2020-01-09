@@ -45,7 +45,7 @@ app.post ('/login', (req, res)=>{
 				hexPublicKey : hexPublicKey
 			}
 			console.log (collection);
-			if (authenticate (crypto, username, signature, hexPublicKey)) {
+			if (authenticate (crypto, username, signature, hexPublicKey)) { // message is unchanged, sent by someone and intergrity assured
 				if (!(username in database) || database[username] != hexPublicKey) {
 					res.send ('UNKNOWN name');
 					console.log ('FAILED: no such name');
