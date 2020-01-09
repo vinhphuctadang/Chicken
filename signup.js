@@ -1,52 +1,53 @@
 const stdin = process.openStdin()
-var elliptic = require('elliptic');
+var elliptic = require ('elliptic');
 var crypto = require ('crypto');
-var EdDSA = elliptic.eddsa;
+var keygen = require ('./keygen.js');
 
-async function prompt (){
+function input (prompt){
 
-	process.stdout.write('Enter username:')
-	var name = ""
-	let stuff = new Promise ((resolve, reject) => {
+	console.log (prompt);
+	var stuff = new Promise ((resolve, reject) => {
 			stdin.addListener('data', text => {
-			  name = text.toString().trim()
-			  // console.log('Your name is: ' + name)
-			  stdin.pause() // stop reading
-			  // console.log ('Hello world');
+			  name = text.toString().trim()			  
+			  stdin.pause() // stop reading		
 			  resolve (name)
 			});
 		});
-	
-	let result = await stuff;
-	return result;
+	return stuff;
 }
 
-function getSignResult (__msg) { // return json of hexPublic key, msg hash and signature
+function getSignResult (key, __msg) { // return json of hexPublic key, msg hash and signature
 
-	var ec = new EdDSA('ed25519');
-	var key = ec.keyFromSecret('111111111'); // hex string, array or Buffer, or load key from file
-
-	// Sign the message's hash (input must be an array, or a hex-string)
 	var msgHash = crypto.createHash('md5').update (__msg).digest ('hex');
-	var sign = key.sign(msgHash).toHex();
-
-	var pub = elliptic.utils.toHex (key.getPublic ());
+	var pub = key.getPublic ('hex');
+	var sign = key.sign(msgHash).toDER ('hex');
+	// console.log (sign);
 	return {
 		hexPublicKey : pub,
 		msg : __msg,
 		signature : sign
 	}
 }
-
-prompt ().then ( (name) => {
-	let toSend = getSignResult (name);
-	const axios = require('axios')
-
+async function main () {
+	var key = await keygen.loadKey ('creditential.json'); // will create if no key exists
+	var name = await input ('Username to sign up: ');
+	// console.log (key);
+	var toSend = getSignResult (key, name); // after get input
+	const axios = require('axios');	
 	axios.post('http://localhost:8080/signup', toSend)
 	.then((res) => {	  
-	  console.log(res.data)
+		console.log(res.data)
 	})
 	.catch((error) => {
-	  console.error(error)
+		console.error(error)
 	})
+
+	return true;
+}
+
+main ().then ((result) => {
+	// console.log (result);
+}).catch ((err) => {
+	console.log ('rejected due to ' + err);
 });
+

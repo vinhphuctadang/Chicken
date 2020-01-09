@@ -1,31 +1,58 @@
+var keygen = exports;
 
-
-// Create and initialize EdDSA context
-// (better do it once and reuse it)
-// Dependencies
 var elliptic = require('elliptic');
-var crypto = require ('crypto');
-var EdDSA = elliptic.eddsa;
-function authenticate (crypto, username, signature, hexPublicKey) {
+var EC = new elliptic.ec ('secp256k1'); // to use it multiple times
 
-	
-	var ec = new EdDSA('ed25519');
-	// perform a hash on username
-	var msgHash = crypto.createHash('md5').update (username).digest ('hex');
-	var key = ec.keyFromPublic(hexPublicKey, 'hex');
-	return key.verify(msgHash, signature); // validate using public key
+function generateKey () {
+	var key = EC.genKeyPair ();
+	return key;
+}
+function getKey (pk, sk) {
+	key = EC.keyPair ({
+		pub: pk,
+		priv: sk,
+		privEnc : 'hex',
+		pubEnc : 'hex'
+	}); 	
+	return key;
+}
+// save the generated key into specified file
+function saveKey (key, ofile = 'creditential.json') {
+	var public = key.getPublic ('hex');
+	var private = key.getPrivate ('hex');
+
+	var toWrite = {
+		pk : public,
+		sk : private
+	}
+
+	var strToWrite = JSON.stringify (toWrite);
+	var fs = require('fs');
+
+	fs.writeFile(ofile, strToWrite, function (err) {
+		if (err) throw err;
+	});
 }
 
-var ec = new EdDSA('ed25519');
-// Create key pair from secret
-var key = ec.keyFromSecret('000000000'); // hex string, array or Buffer
 
-// Sign the message's hash (input must be an array, or a hex-string)
-var msg = 'toilaphuc'
-var msgHash = crypto.createHash('md5').update (msg).digest ('hex');
-var signature = key.sign(msgHash).toHex();
+function loadKey (ifile = 'creditential.json') {
+	return new Promise ( (resolve, reject) => {
+		var fs = require('fs');
+		fs.readFile( __dirname + '/' + ifile, (err, data) => {
+			if (err) {
+				reject (err);
+				return;
+			}
+			parsed = JSON.parse (data.toString ());
+			try {
+				key = getKey (parsed.pk, parsed.sk);
+				resolve (key);
+			} catch (e) {
+				reject (e);
+			}
+		});
+	});
+}
 
-// recipient:
-var pub = elliptic.utils.toHex (key.getPublic ());
-
-console.log (authenticate (crypto, msg, signature, pub))
+keygen.loadKey = loadKey; // to exports LoadKey function
+keygen.getKey = getKey; // to exports LoadKey function

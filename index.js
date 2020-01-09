@@ -5,9 +5,11 @@ require ('dotenv').config ({
 
 var 	express 	 = require ('express')
 var 	bodyParser   = require("body-parser");
+var 	app 		 = express ()
+var 	elliptic 	 = require('elliptic');
+var 	crypto 		 = require ('crypto');
 
-var 	app = express ()
-
+var ec = new elliptic.ec ('secp256k1'); // to use it multiple times
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 const port = process.env.PORT || 8080;
@@ -36,11 +38,17 @@ app.post ('/login', (req, res)=>{
 			signature = req.body.signature;
 			username = req.body.msg;
 			hexPublicKey = req.body.hexPublicKey;
-			console.log (signature + ", " + username + ", " + hexPublicKey);
+
+			collection = {
+				signature : signature,
+				username : username,
+				hexPublicKey : hexPublicKey
+			}
+			console.log (collection);
 			if (authenticate (crypto, username, signature, hexPublicKey)) {
 				if (!(username in database) || database[username] != hexPublicKey) {
 					res.send ('UNKNOWN name');
-					console.log ('FAILED: name');
+					console.log ('FAILED: no such name');
 				} else {
 					res.send ('LOGGED IN SUCCESSFULLY');
 					console.log ('success');
@@ -77,15 +85,12 @@ app.post ('/signup', (req, res)=>{
 	})
 
 // Dependencies
-var elliptic = require('elliptic');
-var crypto = require ('crypto');
-var EdDSA = elliptic.eddsa;
+
 function authenticate (crypto, username, signature, hexPublicKey) {
-	var ec = new EdDSA('ed25519');
+	// var ec = new EdDSA('ed25519');
 	// perform a hash on username
 	var msgHash = crypto.createHash('md5').update (username).digest ('hex');
 	var key = ec.keyFromPublic(hexPublicKey, 'hex');
-
 	// validate using public key
 	return key.verify(msgHash, signature); 
 }
