@@ -1,18 +1,19 @@
 require ('dotenv').config ({
 	path: '.env'
 })
-
 var 	express 	 = require ('express')
 var 	bodyParser   = require("body-parser");
 
 var 	app = express ()
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 const port = process.env.PORT || 8080;
 
-username = "a";
-password = "a";
+
+var EC = require('elliptic').ec;
+// Create and initialize EC context
+// (better do it once and reuse it)
+var ec = new EC('secp256k1');
 
 app.get ('/', (req, res)=>{
 		res.send ('HELLO WORLD');
