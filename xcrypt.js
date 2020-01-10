@@ -1,26 +1,27 @@
-const crypto = require ('crypto')
+const crypto = require ('crypto');
+const constants = require ('constants')
 
 function main (pk, sk) {
 
-	var toEncrypt = "my secret text to be encrypted";
-	var encryptBuffer = Buffer.from(toEncrypt);
+	// console.log (typeof (pk));
+	console.log ('Public key:');
+	var contentToEncrypt = "Hello World";
+	var buffer = Buffer.from (contentToEncrypt, 'utf8');
 
-	//encrypt using public key
-	var encrypted = crypto.publicEncrypt(pk,encryptBuffer);
+	var encrypted = crypto.publicEncrypt (pk, buffer); 
 
-	//print out the text and cyphertext
-	console.log("Text to be encrypted:");
-	console.log(toEncrypt);
-	console.log("cipherText:");
-	console.log(encrypted.toString());
+	console.log ('Encrypted data:'+ encrypted.toString ('base64'));
 
-	//decrypt the cyphertext using the private key
-	var decryptBuffer = Buffer.from(encrypted.toString("base64"), "base64");
-	var decrypted = crypto.privateDecrypt(sk,decryptBuffer);
+	console.log ('Private key:');
+	console.log (sk);
 
-	//print out the decrypted text
-	console.log("decripted Text:");
-	console.log(decrypted.toString());
+	var decrypted = crypto.privateDecrypt (
+		{	
+			"key":sk,
+			passphrase:'password',			
+		}
+		, encrypted);
+	console.log ('Decrypted data:'+decrypted.toString ());
 }
 
 crypto.generateKeyPair('rsa', {
@@ -33,12 +34,15 @@ crypto.generateKeyPair('rsa', {
 		type: 'pkcs8',
 		format: 'pem',
 		cipher: 'aes-256-cbc',
-		passphrase: 'top secret'
+		passphrase: 'password'
 	}
 }, (err, publicKey, privateKey) => {
 	// Handle errors and use the generated key pair.
 		if (err)
 			console.log (err);
-		else 
+		else {
+			
 			main (publicKey, privateKey);
+
+		}
 });

@@ -7,6 +7,7 @@ function generateKey () {
 	var key = EC.genKeyPair ();
 	return key;
 }
+
 function getKey (pk, sk) {
 	key = EC.keyPair ({
 		pub: pk,
@@ -61,20 +62,18 @@ keygen.getKey = getKey;
 var crypto = require ('crypto');
 
 crypto.generateKeyPair('rsa', {
-  modulusLength: 2048,
-  publicKeyEncoding: {
-    type: 'spki',
-    format: 'pem'
-  },
-  privateKeyEncoding: {
-    type: 'pkcs8',
-    format: 'pem',
-    cipher: 'aes-256-cbc',
-    passphrase: 'top secret'
-  }
+	modulusLength: 2048,
+  	publicKeyEncoding: {
+		type: 'spki',
+		format: 'pem'
+  	},
+	 privateKeyEncoding: {
+		type: 'pkcs8',
+		format: 'pem',
+		cipher: 'aes-256-cbc',
+		passphrase: 'top secret'
+	  }
 }, (err, publicKey, privateKey) => {
   // Handle errors and use the generated key pair.
-
-  
 
 });

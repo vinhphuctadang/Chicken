@@ -28,6 +28,7 @@ function getSignResult (key, __msg) { // return json of hexPublic key, msg hash 
 		signature : sign
 	}
 }
+
 async function main () {
 	var key = await keygen.loadKey ('creditential.json'); // will create if no key exists
 	var name = await input ('Username: ');
