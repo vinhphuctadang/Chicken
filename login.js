@@ -35,6 +35,7 @@ async function main () {
 	// console.log (key);
 	var toSend = getSignResult (key, name); // after get input
 	const axios = require('axios');	
+
 	axios.post('http://localhost:8080/login', toSend)
 	.then((res) => {	  
 		console.log("server resp: " + res.data)

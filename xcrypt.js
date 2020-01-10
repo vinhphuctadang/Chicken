@@ -1,27 +1,20 @@
 const crypto = require ('crypto');
 const constants = require ('constants')
-
+const keygen = require('./keygen.js');
 function main (pk, sk) {
 
 	// console.log (typeof (pk));
 	console.log ('Public key:');
 	var contentToEncrypt = "Hello World";
-	var buffer = Buffer.from (contentToEncrypt, 'utf8');
 
-	var encrypted = crypto.publicEncrypt (pk, buffer); 
 
-	console.log ('Encrypted data:'+ encrypted.toString ('base64'));
-
+	var encrypted = keygen.asymEncrypt (pk, contentToEncrypt);
+	console.log ('Encrypted data:'+ encrypted);
 	console.log ('Private key:');
 	console.log (sk);
 
-	var decrypted = crypto.privateDecrypt (
-		{	
-			"key":sk,
-			passphrase:'password',			
-		}
-		, encrypted);
-	console.log ('Decrypted data:'+decrypted.toString ());
+	var decrypted = keygen.asymDecrypt (sk, encrypted, 'password');
+	console.log ('Decrypted data:'+decrypted);
 }
 
 crypto.generateKeyPair('rsa', {
