@@ -54,5 +54,27 @@ function loadKey (ifile = 'creditential.json') {
 	});
 }
 
-keygen.loadKey = loadKey; // to exports LoadKey function
-keygen.getKey = getKey; // to exports LoadKey function
+// exports function to be called from other js
+keygen.loadKey = loadKey; 
+keygen.getKey = getKey; 
+
+var crypto = require ('crypto');
+
+crypto.generateKeyPair('rsa', {
+  modulusLength: 2048,
+  publicKeyEncoding: {
+    type: 'spki',
+    format: 'pem'
+  },
+  privateKeyEncoding: {
+    type: 'pkcs8',
+    format: 'pem',
+    cipher: 'aes-256-cbc',
+    passphrase: 'top secret'
+  }
+}, (err, publicKey, privateKey) => {
+  // Handle errors and use the generated key pair.
+
+  
+
+});
