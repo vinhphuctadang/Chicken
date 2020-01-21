@@ -4,6 +4,6 @@ This repo contains js scripts (NodeJs and Cryptography) as my assignments
 For RSA encryption and SSL simulation
 
 ## Codes
-Server (known as index.js) supports 2 methods: Login and SignUp
-There are 2 client-side scripts: Login.js and Signup.js 
+### Server (known as index.js) supports 2 methods: Login and SignUp
+### There are 2 client-side scripts: Login.js and Signup.js 
 
